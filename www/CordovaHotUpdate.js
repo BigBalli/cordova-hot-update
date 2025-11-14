@@ -117,7 +117,7 @@ document.addEventListener('deviceready', function() {
                 // Not initialized - skip auto-update
                 return;
             }
-
+	    return;
             // Check for new updates first
             CordovaHotUpdate.checkForUpdate(
                 function(manifest) {

@@ -199,6 +199,61 @@
     }];
 }
 
+- (void)loadStoredUpdate:(CDVInvokedUrlCommand*)command {
+    [self.commandDelegate runInBackground:^{
+        @try {
+            // Get the stored update file path
+            NSString *updateFilePath = [self.prefs stringForKey:@"updateFilePath"];
+
+            if (!updateFilePath) {
+                // No update stored
+                CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
+                                                            messageAsString:@""];
+                [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
+                return;
+            }
+
+            // Check if file exists
+            NSFileManager *fileManager = [NSFileManager defaultManager];
+            if (![fileManager fileExistsAtPath:updateFilePath]) {
+                // File doesn't exist anymore
+                NSLog(@"[CordovaHotUpdate] Update file not found at path: %@", updateFilePath);
+                CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
+                                                            messageAsString:@""];
+                [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
+                return;
+            }
+
+            // Read the file content
+            NSError *error = nil;
+            NSString *jsCode = [NSString stringWithContentsOfFile:updateFilePath
+                                                         encoding:NSUTF8StringEncoding
+                                                            error:&error];
+
+            if (error) {
+                NSLog(@"[CordovaHotUpdate] Error reading update file: %@", error.localizedDescription);
+                CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR
+                                                            messageAsString:error.localizedDescription];
+                [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
+                return;
+            }
+
+            NSLog(@"[CordovaHotUpdate] Loaded update from: %@", updateFilePath);
+
+            // Return the JavaScript code
+            CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
+                                                        messageAsString:jsCode];
+            [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
+
+        } @catch (NSException *exception) {
+            NSLog(@"[CordovaHotUpdate] Exception loading update: %@", exception.reason);
+            CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR
+                                                        messageAsString:exception.reason];
+            [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
+        }
+    }];
+}
+
 - (BOOL)isInitialized {
     return [self.prefs boolForKey:@"initialized"];
 }

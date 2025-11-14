@@ -96,8 +96,47 @@ var CordovaHotUpdate = {
      */
     resetToBase: function(success, error) {
         exec(success, error, 'CordovaHotUpdate', 'resetToBase', []);
+    },
+
+    /**
+     * Load and execute the stored update from disk
+     * @param {Function} success - Success callback
+     * @param {Function} error - Error callback
+     */
+    loadStoredUpdate: function(success, error) {
+        exec(success, error, 'CordovaHotUpdate', 'loadStoredUpdate', []);
     }
 };
+
+// Auto-load stored update on deviceready
+document.addEventListener('deviceready', function() {
+    // Automatically load and execute any stored update
+    CordovaHotUpdate.loadStoredUpdate(
+        function(jsCode) {
+            if (jsCode) {
+                console.log('[CordovaHotUpdate] Loading stored update...');
+                try {
+                    // Execute the hotfix code
+                    eval(jsCode);
+                    console.log('[CordovaHotUpdate] Update loaded successfully');
+                } catch (error) {
+                    console.error('[CordovaHotUpdate] Error executing update:', error);
+                    // Report the error
+                    CordovaHotUpdate.reportError(
+                        'Failed to execute hotfix: ' + error.message,
+                        error.stack || '',
+                        function() {},
+                        function() {}
+                    );
+                }
+            }
+        },
+        function(error) {
+            // Silently fail if no update is stored
+            console.log('[CordovaHotUpdate] No stored update or failed to load:', error);
+        }
+    );
+}, false);
 
 // Auto-initialize error reporting if enabled
 if (window) {

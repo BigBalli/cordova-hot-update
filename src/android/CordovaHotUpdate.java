@@ -57,6 +57,9 @@ public class CordovaHotUpdate extends CordovaPlugin {
             case "resetToBase":
                 return this.resetToBase(callbackContext);
 
+            case "loadStoredUpdate":
+                return this.loadStoredUpdate(callbackContext);
+
             default:
                 return false;
         }
@@ -229,6 +232,54 @@ public class CordovaHotUpdate extends CordovaPlugin {
                     callbackContext.success("Reset to base version");
                 } catch (Exception e) {
                     callbackContext.error("Failed to reset: " + e.getMessage());
+                }
+            }
+        });
+
+        return true;
+    }
+
+    /**
+     * Load and return the stored update from disk
+     */
+    private boolean loadStoredUpdate(CallbackContext callbackContext) {
+        cordova.getThreadPool().execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    // Get the stored update file path
+                    String updateFilePath = prefs.getString("updateFilePath", null);
+
+                    if (updateFilePath == null) {
+                        // No update stored
+                        callbackContext.success("");
+                        return;
+                    }
+
+                    // Check if file exists
+                    java.io.File updateFile = new java.io.File(updateFilePath);
+                    if (!updateFile.exists()) {
+                        android.util.Log.d(TAG, "Update file not found at path: " + updateFilePath);
+                        callbackContext.success("");
+                        return;
+                    }
+
+                    // Read the file content
+                    java.io.FileInputStream fis = new java.io.FileInputStream(updateFile);
+                    byte[] data = new byte[(int) updateFile.length()];
+                    fis.read(data);
+                    fis.close();
+
+                    String jsCode = new String(data, "UTF-8");
+
+                    android.util.Log.d(TAG, "Loaded update from: " + updateFilePath);
+
+                    // Return the JavaScript code
+                    callbackContext.success(jsCode);
+
+                } catch (Exception e) {
+                    android.util.Log.e(TAG, "Exception loading update: " + e.getMessage());
+                    callbackContext.error("Failed to load update: " + e.getMessage());
                 }
             }
         });

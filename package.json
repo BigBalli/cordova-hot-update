@@ -1,6 +1,6 @@
 {
   "name": "cordova-hot-update",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A Cordova plugin enabling secure remote JavaScript updates for apps distributed through app stores",
   "cordova": {
     "id": "cordova-hot-update",

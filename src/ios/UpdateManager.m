@@ -80,8 +80,9 @@
         [self.prefs setDouble:[[NSDate date] timeIntervalSince1970] forKey:@"lastCheckTime"];
         [self.prefs synchronize];
 
-        // Send metrics
-        [self sendMetrics:@"check" version:currentVersion];
+        // Send metrics with hotfix version from manifest or current installed version
+        NSString *hotfixVersion = manifest[@"hotfixVersion"] ?: ([self.prefs stringForKey:@"hotfixVersion"] ?: @"base");
+        [self sendMetrics:@"check" version:hotfixVersion];
 
         return manifest;
 

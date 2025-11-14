@@ -1,0 +1,40 @@
+{
+  "name": "cordova-hot-update",
+  "version": "1.0.0",
+  "description": "A Cordova plugin enabling secure remote JavaScript updates for apps distributed through app stores",
+  "cordova": {
+    "id": "cordova-hot-update",
+    "platforms": [
+      "android",
+      "ios"
+    ]
+  },
+  "keywords": [
+    "cordova",
+    "cordova-android",
+    "cordova-ios",
+    "ecosystem:cordova",
+    "hot-update",
+    "code-push",
+    "over-the-air",
+    "ota",
+    "update"
+  ],
+  "author": "Cordova Hot Update",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/cordova-hot-update.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/cordova-hot-update/issues"
+  },
+  "homepage": "https://cordova-hot-update.com",
+  "engines": {
+    "cordovaDependencies": {
+      ">=9.0.0": {
+        "cordova": ">=9.0.0"
+      }
+    }
+  }
+}

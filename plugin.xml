@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+        id="cordova-hot-update"
+        version="1.0.0">
+
+    <name>Cordova Hot Update</name>
+    <description>A Cordova plugin enabling secure remote JavaScript updates for apps distributed through app stores</description>
+    <license>MIT</license>
+    <keywords>cordova,hot-update,code-push,ota</keywords>
+    <repo>https://github.com/yourusername/cordova-hot-update.git</repo>
+    <issue>https://github.com/yourusername/cordova-hot-update/issues</issue>
+
+    <engines>
+        <engine name="cordova" version=">=9.0.0"/>
+    </engines>
+
+    <!-- JavaScript interface -->
+    <js-module src="www/CordovaHotUpdate.js" name="CordovaHotUpdate">
+        <clobbers target="cordova.plugins.hotUpdate" />
+    </js-module>
+
+    <!-- Android -->
+    <platform name="android">
+        <config-file target="res/xml/config.xml" parent="/*">
+            <feature name="CordovaHotUpdate">
+                <param name="android-package" value="com.cordova.hotupdate.CordovaHotUpdate"/>
+            </feature>
+        </config-file>
+
+        <config-file target="AndroidManifest.xml" parent="/*">
+            <uses-permission android:name="android.permission.INTERNET" />
+            <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+        </config-file>
+
+        <source-file src="src/android/CordovaHotUpdate.java" target-dir="src/com/cordova/hotupdate" />
+        <source-file src="src/android/Ed25519.java" target-dir="src/com/cordova/hotupdate" />
+        <source-file src="src/android/UpdateManager.java" target-dir="src/com/cordova/hotupdate" />
+    </platform>
+
+    <!-- iOS -->
+    <platform name="ios">
+        <config-file target="config.xml" parent="/*">
+            <feature name="CordovaHotUpdate">
+                <param name="ios-package" value="CordovaHotUpdate"/>
+            </feature>
+        </config-file>
+
+        <header-file src="src/ios/CordovaHotUpdate.h" />
+        <source-file src="src/ios/CordovaHotUpdate.m" />
+        <header-file src="src/ios/Ed25519.h" />
+        <source-file src="src/ios/Ed25519.m" />
+        <header-file src="src/ios/UpdateManager.h" />
+        <source-file src="src/ios/UpdateManager.m" />
+
+        <framework src="Security.framework" />
+        <framework src="CommonCrypto.framework" />
+    </platform>
+
+</plugin>

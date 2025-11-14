@@ -7,8 +7,8 @@
     <description>A Cordova plugin enabling secure remote JavaScript updates for apps distributed through app stores</description>
     <license>MIT</license>
     <keywords>cordova,hot-update,code-push,ota</keywords>
-    <repo>https://github.com/yourusername/cordova-hot-update.git</repo>
-    <issue>https://github.com/yourusername/cordova-hot-update/issues</issue>
+    <repo>https://github.com/BigBalli/cordova-hot-update.git</repo>
+    <issue>https://github.com/BigBalli/cordova-hot-update/issues</issue>
 
     <engines>
         <engine name="cordova" version=">=9.0.0"/>

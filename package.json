@@ -20,14 +20,18 @@
     "ota",
     "update"
   ],
-  "author": "Cordova Hot Update",
+  "author": {
+    "name": "Giacomo Balli",
+    "email": "g@cordova-hot-update.com",
+    "url": "https://cordova-hot-update.com"
+  },
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/cordova-hot-update.git"
+    "url": "git+https://github.com/BigBalli/cordova-hot-update.git"
   },
   "bugs": {
-    "url": "https://github.com/yourusername/cordova-hot-update/issues"
+    "url": "https://github.com/BigBalli/cordova-hot-update/issues"
   },
   "homepage": "https://cordova-hot-update.com",
   "engines": {

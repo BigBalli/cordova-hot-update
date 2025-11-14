@@ -1,0 +1,38 @@
+# Git files
+.git
+.gitignore
+.gitattributes
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.idea
+.vscode
+*.swp
+*.swo
+*~
+
+# Development files
+.editorconfig
+.eslintrc*
+.prettierrc*
+
+# CI/CD
+.travis.yml
+.github
+
+# Documentation (if you want to exclude from package)
+# docs/
+
+# Test files (if any)
+test/
+tests/
+*.test.js
+*.spec.js
+
+# Build artifacts
+node_modules/
+npm-debug.log
+yarn-error.log

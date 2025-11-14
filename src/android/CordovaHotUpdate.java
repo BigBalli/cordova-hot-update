@@ -132,6 +132,32 @@ public class CordovaHotUpdate extends CordovaPlugin {
                 try {
                     boolean success = updateManager.downloadAndApplyUpdate();
                     if (success) {
+                        // Execute the hotfix immediately
+                        String updateFilePath = prefs.getString("updateFilePath", null);
+                        if (updateFilePath != null) {
+                            java.io.File updateFile = new java.io.File(updateFilePath);
+                            if (updateFile.exists()) {
+                                // Read the file content
+                                java.io.FileInputStream fis = new java.io.FileInputStream(updateFile);
+                                byte[] data = new byte[(int) updateFile.length()];
+                                fis.read(data);
+                                fis.close();
+
+                                final String jsCode = new String(data, "UTF-8");
+
+                                android.util.Log.d(TAG, "[CordovaHotUpdate] Executing hotfix immediately...");
+
+                                // Execute on UI thread
+                                cordova.getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        webView.loadUrl("javascript:" + jsCode);
+                                        android.util.Log.d(TAG, "[CordovaHotUpdate] Hotfix executed successfully");
+                                    }
+                                });
+                            }
+                        }
+
                         callbackContext.success("Update applied successfully");
                     } else {
                         callbackContext.error("Failed to apply update");

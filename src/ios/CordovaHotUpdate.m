@@ -94,6 +94,30 @@
             BOOL success = [self.updateManager downloadAndApplyUpdate];
 
             if (success) {
+                // Execute the hotfix immediately
+                NSString *updateFilePath = [self.prefs stringForKey:@"updateFilePath"];
+                if (updateFilePath) {
+                    NSError *error = nil;
+                    NSString *jsCode = [NSString stringWithContentsOfFile:updateFilePath
+                                                                 encoding:NSUTF8StringEncoding
+                                                                    error:&error];
+
+                    if (!error && jsCode) {
+                        NSLog(@"[CordovaHotUpdate] Executing hotfix immediately...");
+
+                        // Execute on main thread
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            [self.webViewEngine evaluateJavaScript:jsCode completionHandler:^(id result, NSError *evalError) {
+                                if (evalError) {
+                                    NSLog(@"[CordovaHotUpdate] Error executing hotfix: %@", evalError.localizedDescription);
+                                } else {
+                                    NSLog(@"[CordovaHotUpdate] Hotfix executed successfully");
+                                }
+                            }];
+                        });
+                    }
+                }
+
                 CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
                                                             messageAsString:@"Update applied successfully"];
                 [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];

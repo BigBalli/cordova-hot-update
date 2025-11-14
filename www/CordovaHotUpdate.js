@@ -108,34 +108,73 @@ var CordovaHotUpdate = {
     }
 };
 
-// Auto-load stored update on deviceready
+// Auto-check and load updates on deviceready
 document.addEventListener('deviceready', function() {
-    // Automatically load and execute any stored update
-    CordovaHotUpdate.loadStoredUpdate(
-        function(jsCode) {
-            if (jsCode) {
-                console.log('[CordovaHotUpdate] Loading stored update...');
-                try {
-                    // Execute the hotfix code
-                    eval(jsCode);
-                    console.log('[CordovaHotUpdate] Update loaded successfully');
-                } catch (error) {
-                    console.error('[CordovaHotUpdate] Error executing update:', error);
-                    // Report the error
-                    CordovaHotUpdate.reportError(
-                        'Failed to execute hotfix: ' + error.message,
-                        error.stack || '',
-                        function() {},
-                        function() {}
-                    );
-                }
+    // Check if plugin is initialized
+    CordovaHotUpdate.getStatus(
+        function(status) {
+            if (!status.initialized) {
+                // Not initialized - skip auto-update
+                return;
             }
+
+            // Check for new updates first
+            CordovaHotUpdate.checkForUpdate(
+                function(manifest) {
+                    if (manifest.available) {
+                        // New version available - download and execute it
+                        console.log('[CordovaHotUpdate] New version available, downloading...');
+                        CordovaHotUpdate.applyUpdate(
+                            function() {
+                                console.log('[CordovaHotUpdate] New hotfix applied and executed');
+                            },
+                            function(err) {
+                                console.error('[CordovaHotUpdate] Failed to apply new update:', err);
+                                // Fallback to cached version
+                                loadCachedUpdate();
+                            }
+                        );
+                    } else {
+                        // No new version - use cached if available
+                        loadCachedUpdate();
+                    }
+                },
+                function(error) {
+                    // Network error or server unavailable - use cached version
+                    console.log('[CordovaHotUpdate] Could not check for updates, using cached version');
+                    loadCachedUpdate();
+                }
+            );
         },
         function(error) {
-            // Silently fail if no update is stored
-            console.log('[CordovaHotUpdate] No stored update or failed to load:', error);
+            // Plugin not initialized - skip auto-update
         }
     );
+
+    function loadCachedUpdate() {
+        CordovaHotUpdate.loadStoredUpdate(
+            function(jsCode) {
+                if (jsCode) {
+                    console.log('[CordovaHotUpdate] Loading cached update...');
+                    try {
+                        eval(jsCode);
+                        console.log('[CordovaHotUpdate] Cached update executed successfully');
+                    } catch (error) {
+                        console.error('[CordovaHotUpdate] Error executing cached update:', error);
+                        CordovaHotUpdate.reportError(
+                            'Failed to execute hotfix: ' + error.message,
+                            error.stack || '',
+                            function() {},
+                            function() {}
+                        );
+                    }
+                }
+            },
+            function(error) {
+                // No cached update available
+            }
+        );
+    }
 }, false);
 
 // Auto-initialize error reporting if enabled
